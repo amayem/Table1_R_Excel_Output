@@ -3,6 +3,10 @@
 ### Table1 function 
 ###############################################################################
 
+#This function computes summary of variables as need for Table 1 with test and P 
+#for continuous and categorical values:updated Dec 24, 2016
+#Takes a longer time to work for large data set   
+
 myTable1=function(dat,contvar=NULL,catvar=NULL,splitvar,mydec=1,pdec=3,
                 docaption=F,my.docaption=NULL,
                 tsdec=2,rowPCT=F,prmsd=NULL,
@@ -13,18 +17,14 @@ myTable1=function(dat,contvar=NULL,catvar=NULL,splitvar,mydec=1,pdec=3,
                 catTest=NULL, Test=T, chi.correct=F,
                 exceloutput=F, exceloutputName=NULL,
                 latexoutput=F, ... ){   
-  #This function computes summary of variables as need for Table 1 with test and P 
-  #for continuous and categorical values:updated Dec 24, 2016
-  #Takes a longer time to work for large data set    
+ 
   
-  #if(is.null(catTest)){catTest=rep("chisq.t",length(catvar))} 
-  #if(is.null(contTest)){contTest=rep("aov.t",length(contvar))}
+  #Populating default tests for supplied variables so each variable has a corresponding test
   if(is.null(prmsd)){prmsd=c(rep("mean",length(contvar)))}
+  if(is.null(contTest)&!is.null(contvar))contTest=rep("aov.t",length(contvar))
+  if(is.null(catTest)&!is.null(catvar))catTest=rep("chisq.t",length(catvar))
   
   mycaption="Summary of patients' variables across "  
-
-  if(is.null(contTest)&!is.null(contvar))contTest=rep("aov.t",length(contvar))
-  if(is.null(catTest)&!is.null(catvar))catTest=rep("chisq.t",length(contvar))
   
   
   tagnam=data.frame(aov.t="ANOVA test",fisher.t="Fisher exact test",
