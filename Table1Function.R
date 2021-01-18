@@ -7,16 +7,38 @@
 #for continuous and categorical values:updated Dec 24, 2016
 #Takes a longer time to work for large data set   
 
-myTable1=function(dat,contvar=NULL,catvar=NULL,splitvar,mydec=1,pdec=3,
-                docaption=F,my.docaption=NULL,
-                tsdec=2,rowPCT=F,prmsd=NULL,
-                my.loc="./tab1.tex", mysize="scriptsize",
-                myinsert.bottom=NULL, Trace=F, splitlabel=NULL, showtable=F,
-                mysim.p=F, myB=200, mylongtable=F, mylandscape=F,
-                myeps=0.001,bracket=F,mylevels=NULL,contTest=NULL,
-                catTest=NULL, Test=T, chi.correct=F,
-                exceloutput=F, exceloutputName=NULL,
-                latexoutput=F, ... ){   
+myTable1=function(dat,
+                  contvar=NULL,          # Continuous Variables 
+                  catvar=NULL,           # Categorical Variables
+                  splitvar,              # The variable over which compare results. Must be Categorical e.g "Sex"
+                  mydec=1,               # The number of decimal places for calculations
+                  pdec=3,                # Decimal place for p-values
+                  docaption=F,           # Should function do caption for you?
+                  my.docaption=NULL,     # If false, then write caption eg. "Summaries by sex"
+                  tsdec=2,               # Decimal place for T-test
+                  rowPCT=F,
+                  prmsd=NULL,            # Specify statistics for summaries e.g. "mean","median"
+                  myinsert.bottom=NULL, 
+                  Trace=F,               # For debugging
+                  splitlabel=NULL,       # Label for the splitvar
+                  mysim.p=F, 
+                  myB=200, 
+                  mylongtable=F, 
+                  mylandscape=F,
+                  myeps=0.001,
+                  bracket=F,
+                  mylevels=NULL,
+                  contTest=NULL,        # Test to be applied respectively to the contvars e.g. "t.test","wilcox.t","aov.t"
+                  catTest=NULL,         # Test to be applied respectively to the catvar e.g. "fisher.t","chisq.t"
+                  Test=T,               # Test statistic column to be included in table
+                  chi.correct=F,
+                  exceloutput=F,        # Should an excel file be produced?
+                  exceloutputName=NULL, # The name of the excel file to be produced e.g. "name"
+                  latexoutput=F,        # Should a Latex file be produced?
+                  my.loc="./tab1.tex",  # location for tex file e.g. "./name.tex"
+                  mysize="scriptsize",
+                  showtable=F,           # Whether to show Table on current screen. Only works on Macs
+                  ... ){   
  
   
   #Populating default tests for supplied variables so each variable has a corresponding test
@@ -58,7 +80,7 @@ the upper quartile $c$\\ for continuous variables."
  
  
   
-  for( i in 1:n.ttgg){
+  for(i in 1:n.ttgg){
     if(i==n.ttgg){point="."}else{point=","}
     bottom=c(paste(bottom," \\textsuperscript{\\normalfont ", i,"} ",
                    ttgg[i],point , " ",sep="") )
@@ -110,9 +132,9 @@ the upper quartile $c$\\ for continuous variables."
   }
   #Make all catvars factors
   for(k in catvar){
-    tmp.lbl=label(dat[[k]])
-    dat[[k]]<-factor(dat[[k]]) # check how NA's under factors behave
-    label(dat[[k]])<-tmp.lbl
+    tmp.lbl=label(dat[[k]]) # Place holder for label
+    dat[[k]]<-factor(dat[[k]]) # Change into a factor. Check how NA's under factors behave
+    label(dat[[k]])<-tmp.lbl # Place label back
   }
   
 
