@@ -495,8 +495,9 @@ Mean$\\pm$SD for continuous variables, row percentages (frequency) for categoric
   #writing to an excel file
   #cleann=function(x)str_remove_all( x,"[\\bf\\{~\\\\}$]")
   #cleann=function(x)str_replace_all( x,"[\\bf\\{~\\\\}$]"," ")
+  # Function to remove Latex text to prepare for excel file. Also removes dots and replaces with spaces.
   cleann=function(x){
-    y=gsub("\\}","",gsub("\\{\\\\bf","",gsub("\\\\bf\\{","",x)))
+    y=gsub("\\.", " ", gsub("\\}","",gsub("\\{\\\\bf","",gsub("\\\\bf\\{","",x))))
     str_replace_all( y,"[\\{~\\\\}$]"," ")
   }
   
