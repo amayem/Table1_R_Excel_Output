@@ -150,7 +150,6 @@ the upper quartile $c$\\ for continuous variables."
       myrow=tapply(dat[[cv]], dat[[splitvar]],function(x){mymean(x,mydec=mydec)})
       myrowmedian=tapply(dat[[cv]], dat[[splitvar]],function(x){mymedian(x,mydec=mydec)})
       if(Trace==T)cat("Variable ",cv," is done","\n")
-      browser()
       #Find the index of the current variable. contvar is a vector so ==cv will be applied to each element. 
       #Which() will provide the index
       pos.n=which(contvar==cv)
