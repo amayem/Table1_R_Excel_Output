@@ -137,15 +137,17 @@ the upper quartile $c$\\ for continuous variables."
     label(dat[[k]])<-tmp.lbl # Place label back
   }
   
-
+  #Make splitvar a factor
   if(is.null(mylevels)){
     dat[[splitvar]]=factor(dat[[splitvar]]) # changing split var to factors
   }else{
     dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)                                                       
   }
+  
   #Test to exclude contvars if there are only categorical variables 
-  if(is.null(contvar)){ tabmean1<-NULL      }else{
-    for( jt in contvar){
+  if(is.null(contvar)){ tabmean1<-NULL}
+  else{
+    for(jt in contvar){
       myrow=tapply(dat[[jt]], dat[[splitvar]],function(x){mymean(x,mydec=mydec)})
       myrowmedian=tapply(dat[[jt]], dat[[splitvar]],function(x){mymedian(x,mydec=mydec)})
       if(Trace==T)cat("Variable ",jt," is done","\n")
