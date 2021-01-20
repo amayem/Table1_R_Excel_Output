@@ -497,11 +497,12 @@ Mean$\\pm$SD for continuous variables, row percentages (frequency) for categoric
   #cleann=function(x)str_replace_all( x,"[\\bf\\{~\\\\}$]"," ")
   # Function to remove Latex text to prepare for excel file. Also removes dots and replaces with spaces.
   cleann=function(x){
-    y=gsub("\\.", " ", gsub("\\}","",gsub("\\{\\\\bf","",gsub("\\\\bf\\{","",x))))
+    y=gsub("([^0-9])\\.", "\\1 ", gsub("\\}","",gsub("\\{\\\\bf","",gsub("\\\\bf\\{","",x))))
     str_replace_all( y,"[\\{~\\\\}$]"," ")
   }
   
   library(stringr)
+  
   xcelldat=apply(myres[["mytab1"]],2,FUN=cleann)
   nn.col=ncol(xcelldat)
   colnames(xcelldat)[1]<-"Variables"
