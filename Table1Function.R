@@ -100,13 +100,6 @@ the upper quartile $c$\\ for continuous variables."
   #dat=dat%>%tbl_df
   
   
-  #my mean function
-  catnamhold=NULL
-  mathold=NULL
-  cont.row.names=NULL
-  rownull=NULL
- 
-  
   #Function for mean
   mymean=function(x,mydec=mydec,...){
     m=round(mean(x,na.rm=T),digits=mydec)
@@ -144,29 +137,38 @@ the upper quartile $c$\\ for continuous variables."
     dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)                                                       
   }
   
+  catnamhold=NULL
+  mathold=NULL
+  cont.row.names=NULL
+  rownull=NULL
+  
   #Test to exclude contvars if there are only categorical variables 
   if(is.null(contvar)){ tabmean1<-NULL}
   else{
-    for(jt in contvar){
-      myrow=tapply(dat[[jt]], dat[[splitvar]],function(x){mymean(x,mydec=mydec)})
-      myrowmedian=tapply(dat[[jt]], dat[[splitvar]],function(x){mymedian(x,mydec=mydec)})
-      if(Trace==T)cat("Variable ",jt," is done","\n")
-      pos.n=which(contvar==jt)
-      #Need to test for spellings of prmsd var in function and give warning later project
-      if(prmsd[pos.n]=="median"){myrow<-myrowmedian}
+    #Calculate the summary of the contvars based on the factors/categories
+    for(cv in contvar){
+      myrow=tapply(dat[[cv]], dat[[splitvar]],function(x){mymean(x,mydec=mydec)})
+      myrowmedian=tapply(dat[[cv]], dat[[splitvar]],function(x){mymedian(x,mydec=mydec)})
+      if(Trace==T)cat("Variable ",cv," is done","\n")
+      browser()
+      #Find the index of the current variable. contvar is a vector so ==cv will be applied to each element. 
+      #Which() will provide the index
+      pos.n=which(contvar==cv)
+      
+      if(prmsd[pos.n]=="median"){myrow<-myrowmedian} #Otherwise it will stay mean
       rownull= rbind(rownull,myrow)
-      k11<-jt
-      #if( !(is.na(label(dat[[jt]])))) label(dat[[jt]])->k11
-      if( (label(dat[[jt]])!="")) {
-        if(Trace==T) cat(label(dat[[jt]]),"\n")
-        k11=label(dat[[jt]])
-        if(Trace==T)cat(k11," should be same as above","\n")
+      tmp.lbl<-cv
+      
+      #Ensure the variable has an appropriate label.
+      if( (label(dat[[cv]])!="")) {
+        if(Trace==T) cat(label(dat[[cv]]),"\n")
+        tmp.lbl=label(dat[[cv]])
+        if(Trace==T)cat(tmp.lbl," should be same as above","\n")
       }
-      k11=paste("\\bf{",k11,"}",sep="")
-      #         cat(k11,"\n")
-      cont.row.names=c(cont.row.names,k11)
+      tmp.lbl=paste("\\bf{",tmp.lbl,"}",sep="")
+      #Add the label to the end of the continuos variable row names
+      cont.row.names=c(cont.row.names,tmp.lbl)
     }
-    
     
     
   if(Trace==T)cat("Now adding overall","\n") 
