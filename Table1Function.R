@@ -118,9 +118,7 @@ the upper quartile $c$\\ for continuous variables."
     
     return(rr)
   }
-  # Function for mean ends 
-  
-  
+ 
   #Function for median   
   mymedian=function(x,mydec=mydec,...){
     m=round(quantile(x,na.rm=T),digits=mydec)
@@ -131,6 +129,7 @@ the upper quartile $c$\\ for continuous variables."
     rr=paste("{\\scriptsize",lq,"~}", "{\\bf",mq,"}~","{\\scriptsize",uq,"}",sep="")
     return(rr)
   }
+  
   #Make all catvars factors
   for(k in catvar){
     tmp.lbl=label(dat[[k]]) # Place holder for label
