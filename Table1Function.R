@@ -176,7 +176,6 @@ the upper quartile $c$\\ for continuous variables."
     myN=function(x)(sum(!is.na(x)))
     
     #Need to test for spellings of prmsd var in function and give warning later project
-    browser()
     allSummaries=c()
     for(i in 1:length(prmsd)){
       if(prmsd[i]=="mean"){
@@ -185,8 +184,11 @@ the upper quartile $c$\\ for continuous variables."
         #unlist returns a character vector with column names as names
         #unname removes the names
         allSummaries[i]=unname(unlist( colwise(mymean1)(dat[contvar[i]])   ))
-      }else{ 
+      }else if(prmsd[i]=="median"){ 
         allSummaries[i]=unname(unlist( colwise(mymedian1)(dat[contvar[i]])   ))
+      } else
+      {
+        stop("'",paste0(prmsd[i], "'", " is not a valid entry. Only 'mean' and 'median' are accepted"))
       }
     }
     
