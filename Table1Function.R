@@ -162,9 +162,8 @@ the upper quartile $c$\\ for continuous variables."
       cont.row.names=c(cont.row.names,tmp.lbl)
     }
     
-    if(Trace==T)cat("Step 1 is done","\n")#steps 1/10 
+    if(Trace==T)cat("Calculated Cont Var summaries","\n")
     
-    browser()
     #The number of non-NA entries of each contvar
     N=unname(unlist(colwise(myN)(dat[,contvar])))
     #Make a matrix of the following vectors
@@ -174,11 +173,12 @@ the upper quartile $c$\\ for continuous variables."
     #Add row names as the first column
     tabmean=cbind(cont.row.names,tabmean)   
     
-    if(Trace==T)cat("Step 2 is done: Make table for contvar summaries","\n")#steps 2/10 
+    if(Trace==T)cat("Table for contvar summaries done","\n")
   }#end of test for if(is.null(contvar))
   
-  # Categorical summaries start here
-  
+  ######################################################################################
+  ####Producing Table for Categorical Variables stratified on split var and Combined####
+  ######################################################################################
   
   #Make all catvars factors
   for(k in catvar){
@@ -199,9 +199,9 @@ the upper quartile $c$\\ for continuous variables."
   catnamhold=NULL
   mathold=NULL
   
-  #Take categorical summaries out if there are only cont vars involved in table by setting tabcat to NULL
-  if(is.null(catvar)){mathold<-NULL}else{
-    
+  #Check if any catergoical variables are provided
+  if(!is.null(catvar))
+  {
     for(k in catvar){
       
       catab=t(table(dat[[splitvar]],dat[[k]]))
