@@ -139,23 +139,43 @@ the upper quartile $c$\\ for continuous variables."
   
   catnamhold=NULL
   mathold=NULL
-  cont.row.names=NULL
-  rownull=NULL
   
+  ######################################################################################
+  ######Calculating summaries (mean and median) startified on splitvar and Combined#####
+  ######################################################################################
+  if(Trace==T)cat("Now Calculating summaries","\n")
+  
+  #We need to make our own functions that have the decimal places included so that we can pass it to the tapply function coming up
+  mymean1=function(x)mymean(x,mydec=mydec)
+  mymedian1=function(x)mymedian(x,mydec=mydec)                               
+  
+  cont.row.names=NULL
+  stratifiedSummariesMatrix=NULL
+  combinedSummariesVector=c()
+  tabmean1<-NULL
   #Test to exclude contvars if there are only categorical variables 
-  if(is.null(contvar)){ tabmean1<-NULL}
-  else{
+  if(!is.null(contvar))
+  {
     #Calculate the summary of the contvars based on the factors/categories
     for(cv in contvar){
-      myrow=tapply(dat[[cv]], dat[[splitvar]],function(x){mymean(x,mydec=mydec)})
-      myrowmedian=tapply(dat[[cv]], dat[[splitvar]],function(x){mymedian(x,mydec=mydec)})
-      if(Trace==T)cat("Variable ",cv," is done","\n")
+      tempRow = c()
       #Find the index of the current variable. contvar is a vector so ==cv will be applied to each element. 
       #Which() will provide the index
       pos.n=which(contvar==cv)
+      if(prmsd[pos.n]=="mean")
+      {
+        tempRow = tapply(dat[[cv]], dat[[splitvar]],function(x){mymean(x,mydec=mydec)})
+        combinedSummariesVector[pos.n]=unname(unlist( colwise(mymean1)(dat[contvar[pos.n]])   ))
+      } else if (prmsd[pos.n]=="median")
+      {
+        tempRow=tapply(dat[[cv]], dat[[splitvar]],function(x){mymedian(x,mydec=mydec)})
+        combinedSummariesVector[pos.n]=unname(unlist( colwise(mymedian1)(dat[contvar[pos.n]])   ))
+      } else
+      {
+        stop("'",paste0(prmsd[pos.n], "'", " is not a valid entry. Only 'mean' and 'median' are accepted"))
+      }
       
-      if(prmsd[pos.n]=="median"){myrow<-myrowmedian} #Otherwise it will stay mean
-      rownull= rbind(rownull,myrow)
+      stratifiedSummariesMatrix = rbind(stratifiedSummariesMatrix,tempRow)
       tmp.lbl<-cv
       
       #Ensure the variable has an appropriate label.
@@ -169,33 +189,11 @@ the upper quartile $c$\\ for continuous variables."
       cont.row.names=c(cont.row.names,tmp.lbl)
     }
     
-    
-    if(Trace==T)cat("Now adding overall","\n") 
-    mymean1=function(x)mymean(x,mydec=mydec)
-    mymedian1=function(x)mymedian(x,mydec=mydec)                               
-    myN=function(x)(sum(!is.na(x)))
-    
-    #Need to test for spellings of prmsd var in function and give warning later project
-    allSummaries=c()
-    for(i in 1:length(prmsd)){
-      if(prmsd[i]=="mean"){
-        #colwise(mymean1) turns into a function so it itself will take an argument
-        #colwise returns a datafram
-        #unlist returns a character vector with column names as names
-        #unname removes the names
-        allSummaries[i]=unname(unlist( colwise(mymean1)(dat[contvar[i]])   ))
-      }else if(prmsd[i]=="median"){ 
-        allSummaries[i]=unname(unlist( colwise(mymedian1)(dat[contvar[i]])   ))
-      } else
-      {
-        stop("'",paste0(prmsd[i], "'", " is not a valid entry. Only 'mean' and 'median' are accepted"))
-      }
-    }
-    
     if(Trace==T)cat("Step 1 is done","\n")#steps 1/10 
     
+    myN=function(x)(sum(!is.na(x)))
     N=unname(unlist(colwise(myN)(dat[,contvar])))
-    tabmean= cbind(N,rownull,allSummaries)
+    tabmean= cbind(N,stratifiedSummariesMatrix,combinedSummariesVector)
     
     rownames(tabmean)<-NULL
     tabmean1=cbind(cont.row.names,tabmean)   
