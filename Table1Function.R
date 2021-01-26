@@ -165,40 +165,35 @@ the upper quartile $c$\\ for continuous variables."
         if(Trace==T)cat(tmp.lbl," should be same as above","\n")
       }
       tmp.lbl=paste("\\bf{",tmp.lbl,"}",sep="")
-      #Add the label to the end of the continuos variable row names
+      #Add the label to the end of the continuous variable row names
       cont.row.names=c(cont.row.names,tmp.lbl)
     }
     
     
-  if(Trace==T)cat("Now adding overall","\n") 
+    if(Trace==T)cat("Now adding overall","\n") 
     mymean1=function(x)mymean(x,mydec=mydec)
     mymedian1=function(x)mymedian(x,mydec=mydec)                               
     myN=function(x)(sum(!is.na(x)))
-    Combined=unname(unlist( colwise(mymean1)(dat[,contvar])   ))
-    Combmed=unname(unlist( colwise(mymedian1)(dat[,contvar])   ))
-    mean.n=sum(prmsd%in%"mean")
-    median.n=sum(prmsd%in%"median") 
-    #if((mean.n==0 & median.n !=0)){Combined=Combmed
-    #}else if((median.n==0 & mean.n !=0)){Combined=Combined
-    #}else{                                 
-      
-    #  Combined=c(Combined[1:mean.n],Combmed[-c(1:mean.n)])
-      
-    #} 
     
-    
+    #Need to test for spellings of prmsd var in function and give warning later project
+    browser()
+    allSummaries=c()
     for(i in 1:length(prmsd)){
       if(prmsd[i]=="mean"){
-        Combined=Combined
+        #colwise(mymean1) turns into a function so it itself will take an argument
+        #colwise returns a datafram
+        #unlist returns a character vector with column names as names
+        #unname removes the names
+        allSummaries[i]=unname(unlist( colwise(mymean1)(dat[contvar[i]])   ))
       }else{ 
-        Combined[i]=Combmed[i]
+        allSummaries[i]=unname(unlist( colwise(mymedian1)(dat[contvar[i]])   ))
       }
-      }
-    #Need to test for spellings of prmsd var in function and give warning later project
+    }
+    
     if(Trace==T)cat("Step 1 is done","\n")#steps 1/10 
     
     N=unname(unlist(colwise(myN)(dat[,contvar])))
-    tabmean= cbind(N,rownull,Combined)
+    tabmean= cbind(N,rownull,allSummaries)
     
     rownames(tabmean)<-NULL
     tabmean1=cbind(cont.row.names,tabmean)   
