@@ -99,30 +99,6 @@ the upper quartile $c$\\ for continuous variables."
   #Make data compatible with dplyr data frames to use colwise
   #dat=dat%>%tbl_df
   
-  
-  #Function for mean
-  mymean=function(x,mydec=mydec,...){
-    m=round(mean(x,na.rm=T),digits=mydec)
-    s=round(sd(x,na.rm=T),digits=mydec)
-    n=sum(!is.na(x))
-    rr=paste(m,"(",s,")",sep="")
-    pm=paste(m,"$\\pm$",s,sep="")
-    if(bracket==F)rr=pm
-    
-    return(rr)
-  }
- 
-  #Function for median   
-  mymedian=function(x,mydec=mydec,...){
-    m=round(quantile(x,na.rm=T),digits=mydec)
-    lq=m[[2]]
-    mq=m[[3]]
-    uq=m[[4]]
-    n=sum(!is.na(x))
-    rr=paste("{\\scriptsize",lq,"~}", "{\\bf",mq,"}~","{\\scriptsize",uq,"}",sep="")
-    return(rr)
-  }
-  
   #Make all catvars factors
   for(k in catvar){
     tmp.lbl=label(dat[[k]]) # Place holder for label
@@ -146,13 +122,36 @@ the upper quartile $c$\\ for continuous variables."
   if(Trace==T)cat("Now Calculating summaries","\n")
   
   #We need to make our own functions that have the decimal places included so that we can pass it to the tapply function coming up
-  mymean1=function(x)mymean(x,mydec=mydec)
-  mymedian1=function(x)mymedian(x,mydec=mydec)                               
+  #Function for mean
+  myMean=function(x){
+    m=round(mean(x,na.rm=T),digits=mydec)
+    s=round(sd(x,na.rm=T),digits=mydec)
+    n=sum(!is.na(x))
+    rr=paste(m,"(",s,")",sep="")
+    pm=paste(m,"$\\pm$",s,sep="")
+    if(bracket==F)rr=pm
+    
+    return(rr)
+  }
+  
+  #Function for median   
+  myMedian=function(x){
+    m=round(quantile(x,na.rm=T),digits=mydec)
+    lq=m[[2]]
+    mq=m[[3]]
+    uq=m[[4]]
+    n=sum(!is.na(x))
+    rr=paste("{\\scriptsize",lq,"~}", "{\\bf",mq,"}~","{\\scriptsize",uq,"}",sep="")
+    return(rr)
+  }
+  
+  #Function to calculate the number of non-NA entries in a vector
+  myN=function(x)(sum(!is.na(x)))
   
   cont.row.names=NULL
   stratifiedSummariesMatrix=NULL
   combinedSummariesVector=c()
-  tabmean1<-NULL
+  tabmean<-NULL
   #Test to exclude contvars if there are only categorical variables 
   if(!is.null(contvar))
   {
@@ -164,12 +163,12 @@ the upper quartile $c$\\ for continuous variables."
       pos.n=which(contvar==cv)
       if(prmsd[pos.n]=="mean")
       {
-        tempRow = tapply(dat[[cv]], dat[[splitvar]],function(x){mymean(x,mydec=mydec)})
-        combinedSummariesVector[pos.n]=unname(unlist( colwise(mymean1)(dat[contvar[pos.n]])   ))
+        tempRow = tapply(dat[[cv]], dat[[splitvar]],function(x){myMean(x)})
+        combinedSummariesVector[pos.n]=unname(unlist( colwise(myMean)(dat[contvar[pos.n]])   ))
       } else if (prmsd[pos.n]=="median")
       {
-        tempRow=tapply(dat[[cv]], dat[[splitvar]],function(x){mymedian(x,mydec=mydec)})
-        combinedSummariesVector[pos.n]=unname(unlist( colwise(mymedian1)(dat[contvar[pos.n]])   ))
+        tempRow=tapply(dat[[cv]], dat[[splitvar]],function(x){myMedian(x)})
+        combinedSummariesVector[pos.n]=unname(unlist( colwise(myMedian)(dat[contvar[pos.n]])   ))
       } else
       {
         stop("'",paste0(prmsd[pos.n], "'", " is not a valid entry. Only 'mean' and 'median' are accepted"))
@@ -191,14 +190,17 @@ the upper quartile $c$\\ for continuous variables."
     
     if(Trace==T)cat("Step 1 is done","\n")#steps 1/10 
     
-    myN=function(x)(sum(!is.na(x)))
+    browser()
+    #The number of non-NA entries of each contvar
     N=unname(unlist(colwise(myN)(dat[,contvar])))
+    #Make a matrix of the following vectors
     tabmean= cbind(N,stratifiedSummariesMatrix,combinedSummariesVector)
-    
+    #Remove row names
     rownames(tabmean)<-NULL
-    tabmean1=cbind(cont.row.names,tabmean)   
+    #Add row names as the first column
+    tabmean=cbind(cont.row.names,tabmean)   
     
-    if(Trace==T)cat("Step 2 is done","\n")#steps 2/10 
+    if(Trace==T)cat("Step 2 is done: Make table for contvar summaries","\n")#steps 2/10 
   }#end of test for if(is.null(contvar))
   
   # Categorical summaries start here
@@ -285,7 +287,7 @@ if( Hmisc::label(dat[[k]])!="" ){  #This how labels names are swap with actual r
     colnames(mathold)<-NULL
   } #end of test for excluding catvar summaries 
   
-  alltabb= rbind(tabmean1,mathold)
+  alltabb= rbind(tabmean,mathold)
   
   #computing test statistics
   #pt.test, 1) t.test, sign.rank, 2) rank.sum, 3) kruskal.wallis, 4) anova, 5) chisq.test, 6) chisq4trend
