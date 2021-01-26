@@ -66,20 +66,18 @@ the upper quartile $c$\\ for continuous variables."
   prmsd.mean="~~$x\\pm s$ represents $\\bar{X}\\pm 1$ SD."
   if(bracket==T)prmsd.mean="~~$x(s)$ represents $\\bar{X}(1SD)$."
   prmsd.cat=" Numbers after percents are counts." 
- test.used="\\indent Tests used:"
- if("median"%in%prmsd){
-   bb.prmsd=paste(bb.prmsd,prmsd.med,sep="")
- }
- if("mean"%in%prmsd){
-   bb.prmsd=paste(bb.prmsd,prmsd.mean,sep="")
- }
+  test.used="\\indent Tests used:"
+  if("median"%in%prmsd){
+    bb.prmsd=paste(bb.prmsd,prmsd.med,sep="")
+  }
+  if("mean"%in%prmsd){
+    bb.prmsd=paste(bb.prmsd,prmsd.mean,sep="")
+   }
  
- if(!is.null(catvar)){
-   bb.prmsd=paste(bb.prmsd,prmsd.cat,sep="")
- }
- 
- 
-  
+  if(!is.null(catvar)){
+    bb.prmsd=paste(bb.prmsd,prmsd.cat,sep="")
+  }
+
   for(i in 1:n.testsRequestedMatrix){
     if(i==n.testsRequestedMatrix){point="."}
     else{point=","}
@@ -87,37 +85,13 @@ the upper quartile $c$\\ for continuous variables."
                    testsRequestedMatrix[i],point , " ",sep="") )
   }
 
- if(Test==T){
- bottom=paste("\\noindent ",bb.prmsd," ", test.used ,bottom,sep="") }else{
- bottom=paste("\\noindent ",bb.prmsd,sep="")
- }
- #; \\textsuperscript{\\normalfont 2} Pearson test; 
-        
-#\\textsuperscript{\\normalfont 3}Proportional odds likelihood ratio test"
-  
-  
-  #Make data compatible with dplyr data frames to use colwise
-  #dat=dat%>%tbl_df
-  
-  #Make all catvars factors
-  for(k in catvar){
-    tmp.lbl=label(dat[[k]]) # Place holder for label
-    dat[[k]]<-factor(dat[[k]]) # Change into a factor. Check how NA's under factors behave
-    label(dat[[k]])<-tmp.lbl # Place label back
+  if(Test==T){
+    bottom=paste("\\noindent ",bb.prmsd," ", test.used ,bottom,sep="") }else{
+    bottom=paste("\\noindent ",bb.prmsd,sep="")
   }
-  
-  #Make splitvar a factor
-  if(is.null(mylevels)){
-    dat[[splitvar]]=factor(dat[[splitvar]]) # changing split var to factors
-  }else{
-    dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)                                                       
-  }
-  
-  catnamhold=NULL
-  mathold=NULL
   
   ######################################################################################
-  ######Calculating summaries (mean and median) startified on splitvar and Combined#####
+  ######Calculating summaries (mean and median) stratified on splitvar and Combined#####
   ######################################################################################
   if(Trace==T)cat("Now Calculating summaries","\n")
   
@@ -204,19 +178,28 @@ the upper quartile $c$\\ for continuous variables."
   }#end of test for if(is.null(contvar))
   
   # Categorical summaries start here
+  
+  
+  #Make all catvars factors
+  for(k in catvar){
+    tmp.lbl=label(dat[[k]]) # Place holder for label
+    dat[[k]]<-factor(dat[[k]]) # Change into a factor. Check how NA's under factors behave
+    label(dat[[k]])<-tmp.lbl # Place label back
+  }
+  if(Trace==T)cat("Categorical Variables changed to factors","\n")
+  
+  #Make splitvar a factor
   if(is.null(mylevels)){
-    if(Trace==T)cat("Step 3 is done","\n")#steps 3/10     
-    dat[[splitvar]]=factor(dat[[splitvar]])
-    if(Trace==T)cat("Step 4 is done","\n")#steps 4/10 
+    dat[[splitvar]]=factor(dat[[splitvar]]) # changing split var to factors
   }else{
-    dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)
-    
-    if(Trace==T)cat("Step 5 is done","\n")#steps 5/10 
-    
-  }   # This is redundant think of taking out
+    dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)                                                       
+  }
+  if(Trace==T)cat("Splitvar Variables changed to factors","\n")
   
+  catnamhold=NULL
+  mathold=NULL
   
-  #Take categorical summaries out if there are only cont vars invlove in table by setting tabcat to NULL
+  #Take categorical summaries out if there are only cont vars involved in table by setting tabcat to NULL
   if(is.null(catvar)){mathold<-NULL}else{
     
     for(k in catvar){
