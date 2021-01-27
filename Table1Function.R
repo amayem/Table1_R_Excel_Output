@@ -16,7 +16,10 @@ myTable1=function(dat,
                   docaption=F,           # Should function do caption for you?
                   my.docaption=NULL,     # If false, then write caption eg. "Summaries by sex"
                   tsdec=2,               # Decimal place for T-test
-                  rowPCT=F,
+                  rowPCT=F,              # Calculate catVar percentages in rows across splitvar instead of across catVar in the same splitvar
+                  # E.g. catvar is Sex and splitvar is severity
+                  # If rowPCT = F: in each severity calculate the percentage of each sex
+                  # If rowPCT = T: in each sex calculate percentage of each severity
                   prmsd=NULL,            # Specify statistics for summaries e.g. "mean","median"
                   myinsert.bottom=NULL, 
                   Trace=F,               # For debugging
@@ -203,19 +206,18 @@ the upper quartile $c$\\ for continuous variables."
   if(!is.null(catvar))
   {
     for(k in catvar){
-      
+      #All cat vars in dat are levels now and same size.
+      #Put the cat var next to the split var then transpose
       catab=t(table(dat[[splitvar]],dat[[k]]))
-      if(Trace==T)cat("Step 6 is done","\n")#steps 6/10 
       coltot=apply(catab, 2,sum)
       rowtot=apply(catab,1,sum)
       
-      allN=sum(rowtot)
-      combtotalp=round((rowtot/allN)*100,0)
+      allN=sum(rowtot) #Total n of the cat var
+      combinedPercentages=round((rowtot/allN)*100,0)
       n.v=nlevels(dat[[k]])
-      if(Trace==T)cat("Step 7 is done","\n")#steps 7/10 
-      if(rowPCT==T)combtotalp=c(rep(100,n.v))    
+      if(rowPCT==T)combinedPercentages=c(rep(100,n.v))    
       
-      #if(rowPCT==T)combtotalp=c(100,100)    
+      #if(rowPCT==T)combinedPercentages=c(100,100)    
       colpct=round(sweep(catab,2,coltot,"/")*100,0) # column percentages with sweep matric and vector division BCareful
       rowpct=round(sweep(catab,1,rowtot,"/")*100,0) #row pct with sweep
       #colpct=round((catab/coltot)*100,2)
@@ -231,7 +233,7 @@ the upper quartile $c$\\ for continuous variables."
       
       #changing row totals to columns to cbind to catab
       r.tot=as.vector(rowtot)
-      rp.tot=as.vector(combtotalp)
+      rp.tot=as.vector(combinedPercentages)
       
       
       catab1=cbind(catab,r.tot)
