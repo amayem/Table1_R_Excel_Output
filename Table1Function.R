@@ -202,51 +202,55 @@ the upper quartile $c$\\ for continuous variables."
   catnamhold=NULL
   mathold=NULL
   
-  #Check if any catergoical variables are provided
+  #Check if any categorical variables are provided
   if(!is.null(catvar))
   {
+    #For each catvar make a table of catvar against splitvar percentages and absolute n
+    #with a combined column at the end
     for(k in catvar){
+      
+      n.col=nlevels(dat[[splitvar]]) #Number of levels in the splitvar
+      n.row=nlevels(dat[[k]])        #Number of levels in the catvar
+      r.names=levels(dat[[k]])       #The names of the levels of catvar
+      
+      #----Make a table of catvar against splitvar with combined absolute values (n)
+      
       #All cat vars in dat are levels now and same size.
-      #Put the cat var next to the split var then transpose
-      catab=t(table(dat[[splitvar]],dat[[k]]))
-      coltot=apply(catab, 2,sum)
-      rowtot=apply(catab,1,sum)
+      #Make a table with catvar as rows and splitvar as columns
+      catVarTableNs=table(dat[[k]], dat[[splitvar]])
+      colNTotals=apply(catVarTableNs, 2, sum)  #Total n in a col (splitvar level)
+      rowNTotals=apply(catVarTableNs, 1, sum)   #Total n in a row (catvar level)
+      allN=sum(rowNTotals)                  #Total n of the cat var
       
-      allN=sum(rowtot) #Total n of the cat var
-      combinedPercentages=round((rowtot/allN)*100,0)
-      n.v=nlevels(dat[[k]])
-      if(rowPCT==T)combinedPercentages=c(rep(100,n.v))    
+      #Add row totals as a column on the far right
+      catVarTableNsWCombined=cbind(catVarTableNs,rowNTotals)
       
-      #if(rowPCT==T)combinedPercentages=c(100,100)    
-      colpct=round(sweep(catab,2,coltot,"/")*100,0) # column percentages with sweep matric and vector division BCareful
-      rowpct=round(sweep(catab,1,rowtot,"/")*100,0) #row pct with sweep
-      #colpct=round((catab/coltot)*100,2)
+      #----Make a table of catvar against splitvar with combined percentages
+
+      #Default is rowPCT=F, so calculate percentages per column.
+      combinedPercentages=round((rowNTotals/allN)*100,0) 
+      #When calculating percentage per row the combined will always be 100
+      if(rowPCT==T)combinedPercentages=c(rep(100,n.row))    
       
-      #paste col totals and pct
-      
-      n.col=nlevels(dat[[splitvar]])
-      
-      n.row=nlevels(dat[[k]])
-      if(Trace==T)cat("Step 8:levels shd be greater than 2 nlevel=",n.row,"\n")#steps 8/10 
-      r.names=rownames(catab)
-      mat1=matrix(rep("",(n.row+1)*(n.col+1) ),nrow=n.row+1)
-      
-      #changing row totals to columns to cbind to catab
-      r.tot=as.vector(rowtot)
-      rp.tot=as.vector(combinedPercentages)
-      
-      
-      catab1=cbind(catab,r.tot)
-      if(rowPCT==T) colpct=rowpct
-      colpct1=cbind(colpct,rp.tot)
+      colPercentages=round(sweep(catVarTableNs,2,colNTotals,"/")*100,0) #column percentages with sweep matric and vector division BCareful
+      rowPercentages=round(sweep(catVarTableNs,1,rowNTotals,"/")*100,0) #row pct with sweep
+
+      if(rowPCT==T) colPercentages=rowPercentages
+      catVarTablePercentages=cbind(colPercentages,combinedPercentages)
       #how do we get row percentages
+      
+      #----Combine the Ns and percentages into one table
+      
+      #Create an empty matrix with the correct size.
+      #n.col+1 because we need an extra column to put the combined
+      #n.row+1 because we need an extra row to put the catvar name
+      catVarTableNsPercentages=matrix(rep("",(n.row+1)*(n.col+1)),nrow=n.row+1)
       
       for(i in 2:(n.row+1)){
         for(j in 1:(n.col+1)){ 
-          mat1[i,j]<-paste(colpct1[i-1,j],"\\%~","(",catab1[i-1,j],")",sep="")   
+          catVarTableNsPercentages[i,j]<-paste(catVarTablePercentages[i-1,j],"\\%~","(",catVarTableNsWCombined[i-1,j],")",sep="")   
         }}
-      
-      if(Trace==T)cat("Step 9 is done...","\n")#steps 9/10 
+
       rnm=paste("~~~~",r.names,sep="")
       k1<-k
       
@@ -265,7 +269,7 @@ if( Hmisc::label(dat[[k]])!="" ){  #This how labels names are swap with actual r
       N2=rep("",n.row)
       N3=sum(!is.na(dat[[k]]))
       N4=c(N3,N2)
-      mat2=cbind(r.names1,N4,mat1)
+      mat2=cbind(r.names1,N4,catVarTableNsPercentages)
       mathold=rbind(mathold,mat2)
     }
     
