@@ -274,10 +274,6 @@ the upper quartile $c$\\ for continuous variables."
   
   #computing test statistics
   #pt.test, 1) t.test, sign.rank, 2) rank.sum, 3) kruskal.wallis, 4) anova, 5) chisq.test, 6) chisq4trend
-  ## myesp=.001    
-  ## contvar=c("age.at.start","last.score","L.F.score","time.L.F"  )
-  ## splitvar="Fitness.Group"
-  ## mydec=1
   
   TShold.anova<-NULL # aov.t
   TShold.kruskal<-NULL # kruskal.t
@@ -286,9 +282,8 @@ the upper quartile $c$\\ for continuous variables."
   TShold.chisq<-NULL # chisq.t
   TShold.fisher<-NULL #fisher.t
   
-  #Test to set TScont to NULL if there are no contvars
-  
-  if(is.null(contvar)){TScont<-NULL}else{    
+  TScont<-NULL
+  if(!is.null(contvar)){    
     
     lll=nlevels(dat[[splitvar]])
     if(lll < 3) {
