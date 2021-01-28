@@ -199,8 +199,7 @@ the upper quartile $c$\\ for continuous variables."
   }
   if(Trace==T)cat("Splitvar Variables changed to factors","\n")
   
-  catnamhold=NULL
-  mathold=NULL
+  cumulativeCatVarTables=NULL
   
   #Check if any categorical variables are provided
   if(!is.null(catvar))
@@ -249,34 +248,30 @@ the upper quartile $c$\\ for continuous variables."
       for(i in 2:(n.row+1)){
         for(j in 1:(n.col+1)){ 
           catVarTableNsPercentages[i,j]<-paste(catVarTablePercentages[i-1,j],"\\%~","(",catVarTableNsWCombined[i-1,j],")",sep="")   
-        }}
-
-      rnm=paste("~~~~",r.names,sep="")
-      k1<-k
-      
-
-      
-if( Hmisc::label(dat[[k]])!="" ){  #This how labels names are swap with actual rownames
-        if(Trace==T)cat("Label of ",k," is =",label(dat[[k]]),"\n")
-        k1=label(dat[[k]])
-        if(Trace==T)cat( k1," should be same as previous","\n")
+        }
       }
       
-      k1=paste("\\bf{",k1,"}",sep="")
-      r.names1=c(k1,rnm)       # You may bold this cat names in future
+      #----Make a table of the labels and N of the catvar
+      rowNamesFormattted=paste("~~~~",r.names,sep="")
+      catVarLabel<-k
+      # :: specifies to use the function in package Hmisc
+      if(Hmisc::label(dat[[k]])!=""){ #This how labels names are swap with actual rownames
+        catVarLabel=label(dat[[k]])
+      }
+      catVarLabel=paste("\\bf{",catVarLabel,"}",sep="")
+      labelAndRowNames=c(catVarLabel,rowNamesFormattted)# You may bold this cat names in future
       
-      catnamhold=c(catnamhold, r.names1)
-      N2=rep("",n.row)
-      N3=sum(!is.na(dat[[k]]))
-      N4=c(N3,N2)
-      mat2=cbind(r.names1,N4,catVarTableNsPercentages)
-      mathold=rbind(mathold,mat2)
+      N2=rep("",n.row)         #A vector of empty spaces for each category
+      N3=sum(!is.na(dat[[k]])) #The number of recorded values in catvar
+      N4=c(N3,N2)              #A vector that will be the column showing the N in the category
+      catVarTableLabelsNsPercentages=cbind(labelAndRowNames,N4,catVarTableNsPercentages)
+      cumulativeCatVarTables=rbind(cumulativeCatVarTables,catVarTableLabelsNsPercentages)
     }
     
-    colnames(mathold)<-NULL
+    colnames(cumulativeCatVarTables)<-NULL
   } #end of test for excluding catvar summaries 
   
-  alltabb= rbind(tabmean,mathold)
+  alltabb= rbind(tabmean,cumulativeCatVarTables)
   
   #computing test statistics
   #pt.test, 1) t.test, sign.rank, 2) rank.sum, 3) kruskal.wallis, 4) anova, 5) chisq.test, 6) chisq4trend
