@@ -118,7 +118,7 @@ the upper quartile $c$\\ for continuous variables."
     mq=m[[3]]
     uq=m[[4]]
     n=sum(!is.na(x))
-    rr=paste("{\\scriptsize",lq,"~}", "{\\bf",mq,"}~","{\\scriptsize",uq,"}",sep="")
+    rr=paste("{\\scriptsize",lq,"~}", " {\\bf",mq,"}~"," {\\scriptsize",uq,"}",sep="")
     return(rr)
   }
   
