@@ -104,8 +104,8 @@ the upper quartile $c$\\ for continuous variables."
     m=round(mean(x,na.rm=T),digits=mydec)
     s=round(sd(x,na.rm=T),digits=mydec)
     n=sum(!is.na(x))
-    rr=paste(m,"(",s,")",sep="")
-    pm=paste(m,"$\\pm$",s,sep="")
+    rr=paste(m," (",s,")",sep="")
+    pm=paste(m," $\\pm$",s,sep="")
     if(bracket==F)rr=pm
     
     return(rr)
