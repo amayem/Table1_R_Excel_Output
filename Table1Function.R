@@ -40,7 +40,8 @@ myTable1=function(dat,
                   latexoutput=F,        # Should a Latex file be produced?
                   my.loc="./tab1.tex",  # location for tex file e.g. "./name.tex"
                   mysize="scriptsize",
-                  showtable=F,           # Whether to show Table on current screen. Only works on Macs
+                  showtable=F,          # Whether to show Table on current screen. Only works on Macs
+                  hasExcluded=F,           # If true then there must be a column called "excluded" that indicates which rows to remove with a 1
                   ... ){   
  
   
@@ -48,6 +49,8 @@ myTable1=function(dat,
   if(is.null(prmsd)){prmsd=c(rep("mean",length(contvar)))}
   if(is.null(contTest)&!is.null(contvar))contTest=rep("aov.t",length(contvar))
   if(is.null(catTest)&!is.null(catvar))catTest=rep("chisq.t",length(catvar))
+  
+  if (!is.null(hasExcluded)){dat=dat[!(dat$excluded==1),]}
   
   defaultCaption="Summary of patients' variables across "  
   
@@ -291,7 +294,7 @@ the upper quartile $c$\\ for continuous variables."
       #Do the t.test
       if( any(contTest%in%"t.test")){#Test to stop running t test if not needed                                       
         for(t.nn in contvar){
-          
+          #TODO if any group has less than 2 then do not do the test
           vartest=with(dat,var.test(as.formula(paste(t.nn,splitvar,sep="~")))) # Variance test to check which variance to use pooled or sattarwaite 
           var.p=vartest[["p.value"]]
           myvar.equal=T
@@ -322,8 +325,7 @@ the upper quartile $c$\\ for continuous variables."
         }
       } #End of Wilcox.test 
       
-    } #End of two level split
-    
+    } else #End of two level split
     if (any(contTest%in%"wilcox.t") || any(contTest%in%"t.test"))
     {
       stop("T-test and Wilcox can only be used when splitvar is 2 levels only")
