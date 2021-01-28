@@ -288,7 +288,7 @@ the upper quartile $c$\\ for continuous variables."
     if(n.splitvarLevels < 3) {
       
       #Do the t.test
-      if( any(contTest%in%"t.test")){    #Test to stop running t test if not needed                                       
+      if( any(contTest%in%"t.test")){#Test to stop running t test if not needed                                       
         for(t.nn in contvar){
           
           vartest=with(dat,var.test(as.formula(paste(t.nn,splitvar,sep="~")))) # Variance test to check which variance to use pooled or sattarwaite 
@@ -307,11 +307,11 @@ the upper quartile $c$\\ for continuous variables."
           espo=paste("^{",t.jn,"}",sep="")
           t.ts=paste("$t(",df.t,")=",ts.t,",",P,p.t,espo, "$",sep="")
           TShold.ttest=c(TShold.ttest,t.ts)
-        }}
-      
+        }
+      } #End of t.test
       
       #Do Wilcox.test    
-      if( any(contTest%in%"wilcox.t")){    #Test to stop running wilcox test if not needed                                       
+      if( any(contTest%in%"wilcox.t")){#Test to stop running wilcox test if not needed                                       
         for(w.nn in contvar){
           wmd=with(dat,wilcox.test(as.formula(paste(w.nn,splitvar,sep="~"))))
           
@@ -325,11 +325,12 @@ the upper quartile $c$\\ for continuous variables."
           espo=paste("^{",w.jn,"}",sep="")
           w.ts=paste("$W=",ts.w,",",P,p.w,espo,"$",sep="")
           TShold.ranksum=c(TShold.ranksum, w.ts)
-        }}
+        }
+      } #End of Wilcox.test 
       
-    } #end of two level split
+    } #End of two level split
     
-    #Do kruskal wallis
+    #Do Kruskal Wallis
     if( any(contTest%in%"kruskal.t")){    #Test to stop running kruskal test if not needed                                                                         
       for(k.nn in contvar){
         kmd=with(dat,kruskal.test(as.formula(paste(k.nn,splitvar,sep="~"))))
@@ -343,10 +344,10 @@ the upper quartile $c$\\ for continuous variables."
         espo=paste("^{",k.jn,"}",sep="")
         k.ts=paste("$\\chi^2_{",df.k,"}=",ts.k,P,p.k,espo,"$",sep="")
         TShold.kruskal=c(TShold.kruskal,k.ts)
-      }}
+      }
+    } #End of Kruskal Wallis 
     
-    #And Anova  
-    
+    #Do ANOVA
     if( any(contTest%in%"aov.t")){    #Test to stop running anova test if not needed                                                                           
       for(nn in contvar){
         #md=summary(with(dat,aov(age.at.start~Fitness.Group)))
@@ -362,8 +363,8 @@ the upper quartile $c$\\ for continuous variables."
         espo=paste("^{",a.jn,"}",sep="")
         TS=paste("$F_{",df1,", ",df2,"}=",ts,P,P.a,espo,"$", sep="" )
         TShold.anova=c(TShold.anova,TS)
-        
-      }}
+      }
+    } #End of ANOVA 
     
     
     TScont<-NULL
