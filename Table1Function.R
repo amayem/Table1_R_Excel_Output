@@ -284,6 +284,7 @@ the upper quartile $c$\\ for continuous variables."
   TShold.fisher  <-NULL     # fisher.t
   
   TScont         <-NULL     # Table to hold all contvar tests
+  TSNcont        <-NULL     # Table to hold all contvar test names
   if(!is.null(contvar)){    
     if(n.splitvarLevels < 3) {
       
@@ -368,30 +369,37 @@ the upper quartile $c$\\ for continuous variables."
     
     
     TScont<-NULL
+    temp.TSNcont<-NULL
     #contTest=c("aov.t","aov.t","aov.t","kruskal.t")
     for(ii in 1:length(contvar)){
       {
-        if(contTest[ii]=="t.test"){tscont=TShold.ttest[ii]
-        }else{
-          if(contTest[ii]=="aov.t"){tscont=TShold.anova[ii]                           
-          }else{
-            if(contTest[ii]=="wilcox.t"){tscont=TShold.ranksum[ii]
-            }else{
-              if(contTest[ii]=="kruskal.t"){tscont=TShold.kruskal[ii]
-              }
-            }}}}
+        if(contTest[ii]=="t.test"){
+          tscont=TShold.ttest[ii]
+          temp.TSNcont="t-test"
+        }else if(contTest[ii]=="aov.t"){
+          tscont=TShold.anova[ii]
+          temp.TSNcont="ANOVA"
+        }else if(contTest[ii]=="wilcox.t"){
+          tscont=TShold.ranksum[ii]
+          temp.TSNcont="Wilcox"
+        }else if(contTest[ii]=="kruskal.t"){
+          tscont=TShold.kruskal[ii]
+          temp.TSNcont="Kruskal-Wallis"
+        }
+      }
       if(Trace==T)cat(paste("Done for ",contvar[ii], "\n",sep=" "))
-      TScont=c(TScont,tscont)
+      TScont=c(TScont, tscont)
+      TSNcont=c(TSNcont, temp.TSNcont)
     }
-    
     
   } #end of test for TScont equal NULL if there are no cont var 
   
   ######################## Need to dom for categorical variables########################
   #catvar=c("sex","group.percent.days")
   #fisher test
-  
-  if(is.null(catvar)){TScat<-NULL}else{
+  TScat<-NULL
+  TSNcat<-NULL
+  if(!is.null(catvar)){
     
     if( any(catTest%in%"fisher.t")){    #Test to stop running fihser test if not needed
       for(f.nn in catvar){
@@ -436,32 +444,37 @@ the upper quartile $c$\\ for continuous variables."
     ### looping throu to get TS for catvars
     
     TScat<-NULL
+    TSNcat<-NULL
     #catTest=c("chisq.t","fisher.t")
     for(iii in 1:length(catvar)){
       { 
-        if(catTest[iii]=="chisq.t"){tscat=TShold.chisq[iii]
-        }else{
-          if(catTest[iii]=="fisher.t"){tscat=TShold.fisher[iii] }                          
+        temp.TSNcat<-NULL
+        if(catTest[iii]=="chisq.t"){
+          tscat=TShold.chisq[iii]
+          temp.TSNcat="Chi-square"
+        }else if(catTest[iii]=="fisher.t"){
+          tscat=TShold.fisher[iii]                        
+          temp.TSNcat="Fisher"
         }
         if(Trace==T)cat(paste("Done for ",catvar[iii], "\n",sep=" "))
         TScat=c(TScat,tscat)
-        nlevels(dat[[catvar[iii]]])->catn
+        TSNcat=c(TSNcat, temp.TSNcat)
+        catn<-nlevels(dat[[catvar[iii]]])
         TScat=c(TScat,rep("",catn))
-        
+        TSNcat=c(TSNcat, rep("",catn))
       }      
     }
-    
   }
   #end of setting TScat to NULL if there are no catvars
   
   #combine TStats for cont and cat vars
-  
   Test.Statistics=c(TScont,TScat)
-  alltabbb=data.frame(contCatVarTable,Test.Statistics)
+  Test.Statistics.Names=c(TSNcont,TSNcat)
+  alltabbb=data.frame(contCatVarTable,Test.Statistics,Test.Statistics.Names)
   
   ch=colheads=table(dat[[splitvar]])
   hnam=names(colheads)
-  colheads=c("Variables","N", hnam,"Combined","Test Statistic")
+  colheads=c("Variables","N", hnam,"Combined","P value", "Test")
   extracolheads=c("","",paste("N=",as.vector(ch),sep=""),paste("N=",sum(as.vector(ch)),sep=""))
   insert.bottoml="\\scriptsize{   Data is presented as : 
 Mean$\\pm$SD for continuous variables, row percentages (frequency) for categorical variables~~\\indent test Test used: \\textsuperscript{\\normalfont 1} T-test ~~~~~, \\textsuperscript{\\normalfont 2} Pearson chi-square test } "
@@ -485,14 +498,14 @@ Mean$\\pm$SD for continuous variables, row percentages (frequency) for categoric
   nn.col=ncol(xcelldat)
   colnames(xcelldat)[1]<-"Variables"
   
-  extraH=t(as.matrix( c(extracolheads,"") ))
+  extraH=t(as.matrix( c(extracolheads,"","") ))
   
   hhhh=t(as.matrix(colnames(xcelldat)))
-   
+ 
   xlabel=splitvar
   if(!is.null(splitlabel))xlabel=splitlabel
   ssplit=t(as.matrix(c(" ","",xlabel,rep("",(nn.col-3)))))
-  xcelldat=rbind(ssplit,hhhh,extraH,xcelldat)
+  xcelldat=rbind(ssplit,colheads,extraH,xcelldat)
   xcelldat=apply(xcelldat,2,FUN=function(x)gsub(mysize," ",x))
   
   if(Test==F){xcelldat=xcelldat[,-nn.col]}
