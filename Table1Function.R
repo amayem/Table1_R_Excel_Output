@@ -354,7 +354,7 @@ the upper quartile $c$\\ for continuous variables."
         P.a=format.pval(round(md["Pr(>F)1"],digits=pdec),eps=myeps)
         if(round(md["Pr(>F)1"],pdec)< myeps){P=",~P"}else{P=",~P="}
         ts=round(md["F value1"],digits=tsdec)[[1]]
-        TS=paste("$F_{",df1,", ",df2,"}=",ts,P,P.a,"$", sep="" )
+        TS=paste("$F({",df1,", ",df2,"})=",ts,P,P.a,"$", sep="" )
         TShold.anova=c(TShold.anova,TS)
       }
     } #End of ANOVA 
@@ -510,15 +510,13 @@ Mean$\\pm$SD for continuous variables, row percentages (frequency) for categoric
   if(  !(is.null(splitlabel)))l.splitvar<-splitlabel
   n.sp=nlevels(dat[[splitvar]])
   if( !is.null(splitlabel)) splitvar<-splitlabel
-
   if(latexoutput==T){
   tab1=Hmisc::latex(tab,rowname=Variable,rowlabel="Variables",
              caption=(if(docaption==T)paste(defaultCaption,splitvar,sep="")else my.docaption),
              file=my.loc,where="!htbp",landscape=mylandscape,longtable=mylongtable,
              
-             cgroup=(if(Test==T)c("",l.splitvar,"","") else c("",l.splitvar,"")),
-             n.cgroup=(if(Test==T)c(1,n.sp,1,1) else c(1,n.sp,1)),
-             extracolheads=(if(Test==T)c(myres[["extracolheads"]][-1],"" ) else c(myres[["extracolheads"]][-1])),
+             cgroup=(if(Test==T)c("",l.splitvar,"","","") else c("",l.splitvar,"","")),
+             n.cgroup=(if(Test==T)c(1,n.sp,1,1,1) else c(1,n.sp,1,1)),
              colheads=(if(Test==T)c(myres[["colheads"]][-1]) else c(myres[["colheads"]][c(-1,-nn.col)]) ),
              
              size=mysize,
