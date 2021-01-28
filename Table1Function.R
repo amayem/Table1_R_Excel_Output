@@ -128,7 +128,7 @@ the upper quartile $c$\\ for continuous variables."
   cont.row.names=NULL
   stratifiedSummariesMatrix=NULL
   combinedSummariesVector=c()
-  tabmean<-NULL
+  cumulativeContVarTables<-NULL
   #Test to exclude contvars if there are only categorical variables 
   if(!is.null(contvar))
   {
@@ -170,11 +170,11 @@ the upper quartile $c$\\ for continuous variables."
     #The number of non-NA entries of each contvar
     N=unname(unlist(colwise(myN)(dat[,contvar])))
     #Make a matrix of the following vectors
-    tabmean= cbind(N,stratifiedSummariesMatrix,combinedSummariesVector)
+    cumulativeContVarTables= cbind(N,stratifiedSummariesMatrix,combinedSummariesVector)
     #Remove row names
-    rownames(tabmean)<-NULL
+    rownames(cumulativeContVarTables)<-NULL
     #Add row names as the first column
-    tabmean=cbind(cont.row.names,tabmean)   
+    cumulativeContVarTables=cbind(cont.row.names,cumulativeContVarTables)   
     
     if(Trace==T)cat("Table for contvar summaries done","\n")
   }#end of test for if(is.null(contvar))
@@ -267,11 +267,10 @@ the upper quartile $c$\\ for continuous variables."
       catVarTableLabelsNsPercentages=cbind(labelAndRowNames,N4,catVarTableNsPercentages)
       cumulativeCatVarTables=rbind(cumulativeCatVarTables,catVarTableLabelsNsPercentages)
     }
-    
     colnames(cumulativeCatVarTables)<-NULL
   } #end of test for excluding catvar summaries 
   
-  alltabb= rbind(tabmean,cumulativeCatVarTables)
+  contCatVarTable=rbind(cumulativeContVarTables,cumulativeCatVarTables)
   
   #computing test statistics
   #pt.test, 1) t.test, sign.rank, 2) rank.sum, 3) kruskal.wallis, 4) anova, 5) chisq.test, 6) chisq4trend
@@ -463,7 +462,7 @@ the upper quartile $c$\\ for continuous variables."
   #combine TStats for cont and cat vars
   
   Test.Statistics=c(TScont,TScat)
-  alltabbb=data.frame(alltabb,Test.Statistics)
+  alltabbb=data.frame(contCatVarTable,Test.Statistics)
   
   ch=colheads=table(dat[[splitvar]])
   hnam=names(colheads)
@@ -472,7 +471,7 @@ the upper quartile $c$\\ for continuous variables."
   insert.bottoml="\\scriptsize{   Data is presented as : 
 Mean$\\pm$SD for continuous variables, row percentages (frequency) for categorical variables~~\\indent test Test used: \\textsuperscript{\\normalfont 1} T-test ~~~~~, \\textsuperscript{\\normalfont 2} Pearson chi-square test } "
   
-  myres=list(alltabb,alltabbb,colheads,extracolheads,insert.bottoml)
+  myres=list(contCatVarTable,alltabbb,colheads,extracolheads,insert.bottoml)
   names(myres)<-list("mytab","mytab1","colheads","extracolheads","insert.bottom")
   
   
