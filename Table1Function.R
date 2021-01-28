@@ -198,7 +198,7 @@ the upper quartile $c$\\ for continuous variables."
     dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)                                                       
   }
   if(Trace==T)cat("Splitvar Variables changed to factors","\n")
-  
+  n.splitvarLevels=nlevels(dat[[splitvar]]) #Number of levels in the splitvar
   cumulativeCatVarTables=NULL
   
   #Check if any categorical variables are provided
@@ -208,7 +208,7 @@ the upper quartile $c$\\ for continuous variables."
     #with a combined column at the end
     for(k in catvar){
       
-      n.col=nlevels(dat[[splitvar]]) #Number of levels in the splitvar
+      n.col=n.splitvarLevels         #Number of levels in the splitvar
       n.row=nlevels(dat[[k]])        #Number of levels in the catvar
       r.names=levels(dat[[k]])       #The names of the levels of catvar
       
@@ -284,9 +284,7 @@ the upper quartile $c$\\ for continuous variables."
   
   TScont<-NULL
   if(!is.null(contvar)){    
-    
-    lll=nlevels(dat[[splitvar]])
-    if(lll < 3) {
+    if(n.splitvarLevels < 3) {
       
       #Do the t.test
       if( any(contTest%in%"t.test")){    #Test to stop running t test if not needed                                       
