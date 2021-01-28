@@ -42,6 +42,7 @@ myTable1=function(dat,
                   mysize="scriptsize",
                   showtable=F,          # Whether to show Table on current screen. Only works on Macs
                   hasExcluded=F,           # If true then there must be a column called "excluded" that indicates which rows to remove with a 1
+                  fisherWorkspace=200000,# The size of the workspace for fisher.t
                   ... ){   
  
   
@@ -397,7 +398,7 @@ the upper quartile $c$\\ for continuous variables."
     
     if( any(catTest%in%"fisher.t")){    #Test to stop running fihser test if not needed
       for(f.nn in catvar){
-        fmd=fisher.test(table(dat[[f.nn]],dat[[splitvar]]),simulate.p.value=mysim.p,B=myB)
+        fmd=fisher.test(table(dat[[f.nn]],dat[[splitvar]]),simulate.p.value=mysim.p,B=myB, workspace = fisherWorkspace)
         options(digits=7)
         p.f= format.pval(round(fmd[['p.value']],digits=pdec),eps=myeps)  
         
