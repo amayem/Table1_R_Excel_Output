@@ -303,10 +303,7 @@ the upper quartile $c$\\ for continuous variables."
           p.t= format.pval(round(tmd[['p.value']],digits=pdec) ,eps=myeps)  
           df.t=round(tmd[["parameter"]])[[1]]
           if(round(tmd[["p.value"]],digits=pdec) < myeps){P="~P"}else{P="~P="}
-          grep("t.test",testsRequestedVector)->t.jn
-          if(!(any(t.jn)))t.jn<-NULL 
-          espo=paste("^{",t.jn,"}",sep="")
-          t.ts=paste("$t(",df.t,")=",ts.t,",",P,p.t,espo, "$",sep="")
+          t.ts=paste("$t(",df.t,")=",ts.t,",",P,p.t, "$",sep="")
           TShold.ttest=c(TShold.ttest,t.ts)
         }
       } #End of t.test
@@ -320,11 +317,7 @@ the upper quartile $c$\\ for continuous variables."
           p.w= format.pval(round(wmd[['p.value']],digits=pdec),eps=myeps)  
           # df.w=round(wmd[["parameter"]])[[1]]
           if(round(wmd[["p.value"]],digits=pdec) < myeps){P="~P"}else{P="~P="}
-          
-          grep("wilcox.t",testsRequestedVector)->w.jn
-          if(!(any(w.jn)))w.jn<-NULL 
-          espo=paste("^{",w.jn,"}",sep="")
-          w.ts=paste("$W=",ts.w,",",P,p.w,espo,"$",sep="")
+          w.ts=paste("$W=",ts.w,",",P,p.w,"$",sep="")
           TShold.ranksum=c(TShold.ranksum, w.ts)
         }
       } #End of Wilcox.test 
@@ -340,10 +333,7 @@ the upper quartile $c$\\ for continuous variables."
         df.k=round(kmd[["parameter"]])[[1]]
         
         if(round(kmd[["p.value"]],digits=pdec) < myeps){P=",~P"}else{P=",~P="}
-        grep("kruskal.t",testsRequestedVector)->k.jn
-        if(!(any(k.jn)))k.jn<-NULL 
-        espo=paste("^{",k.jn,"}",sep="")
-        k.ts=paste("$\\chi^2_{",df.k,"}=",ts.k,P,p.k,espo,"$",sep="")
+        k.ts=paste("$\\chi^2_{",df.k,"}=",ts.k,P,p.k,"$",sep="")
         TShold.kruskal=c(TShold.kruskal,k.ts)
       }
     } #End of Kruskal Wallis 
@@ -359,10 +349,7 @@ the upper quartile $c$\\ for continuous variables."
         P.a=format.pval(round(md["Pr(>F)1"],digits=pdec),eps=myeps)
         if(round(md["Pr(>F)1"],pdec)< myeps){P=",~P"}else{P=",~P="}
         ts=round(md["F value1"],digits=tsdec)[[1]]
-        grep("aov.t",testsRequestedVector)->a.jn
-        if(!(any(a.jn)))a.jn<-NULL 
-        espo=paste("^{",a.jn,"}",sep="")
-        TS=paste("$F_{",df1,", ",df2,"}=",ts,P,P.a,espo,"$", sep="" )
+        TS=paste("$F_{",df1,", ",df2,"}=",ts,P,P.a,"$", sep="" )
         TShold.anova=c(TShold.anova,TS)
       }
     } #End of ANOVA 
@@ -408,10 +395,7 @@ the upper quartile $c$\\ for continuous variables."
         p.f= format.pval(round(fmd[['p.value']],digits=pdec),eps=myeps)  
         
         if(round(fmd[["p.value"]],digits=pdec) < myeps){P="~~~~~~P"}else{P="~~~~~~P="}
-        grep("fisher.t",testsRequestedVector)->f.jn
-        if(!(any(f.jn)))f.jn<-NULL 
-        espo=paste("^{",f.jn,"}",sep="")
-        f.ts=paste("$",P,p.f,espo,"$",sep="")
+        f.ts=paste("$",P,p.f,"$",sep="")
         TShold.fisher=c(TShold.fisher,f.ts)
         
       }
@@ -433,10 +417,7 @@ the upper quartile $c$\\ for continuous variables."
         df.chi=round(chimd[["parameter"]])[[1]]
         
         if(round(chimd[["p.value"]],digits=pdec) < myeps){P=",~P"}else{P=",~P="}
-        grep("chisq.t",testsRequestedVector)->c.jn
-        if(!(any(c.jn)))c.jn<-NULL 
-        espo=paste("^{",c.jn,"}",sep="")
-        chi.ts=paste("$\\chi^2_{",df.chi,"}=",ts.chi,P,p.chi,espo,"$",sep="")
+        chi.ts=paste("$\\chi^2_{",df.chi,"}=",ts.chi,P,p.chi,"$",sep="")
         TShold.chisq=c(TShold.chisq,chi.ts)
       }
     }
