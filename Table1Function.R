@@ -324,6 +324,11 @@ the upper quartile $c$\\ for continuous variables."
       
     } #End of two level split
     
+    if (any(contTest%in%"wilcox.t") || any(contTest%in%"t.test"))
+    {
+      stop("T-test and Wilcox can only be used when splitvar is 2 levels only")
+    }
+    
     #Do Kruskal Wallis
     if( any(contTest%in%"kruskal.t")){    #Test to stop running kruskal test if not needed                                                                         
       for(k.nn in contvar){
