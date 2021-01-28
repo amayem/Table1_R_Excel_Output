@@ -48,7 +48,7 @@ myTable1=function(dat,
   #Populating default tests for supplied variables so each variable has a corresponding test
   if(is.null(prmsd)){prmsd=c(rep("mean",length(contvar)))}
   if(is.null(contTest)&!is.null(contvar))contTest=rep("aov.t",length(contvar))
-  if(is.null(catTest)&!is.null(catvar))catTest=rep("chisq.t",length(catvar))
+  if(is.null(catTest)&!is.null(catvar))catTest=rep("fisher.t",length(catvar))
   
   if (!is.null(hasExcluded)){dat=dat[!(dat$excluded==1),]}
   
