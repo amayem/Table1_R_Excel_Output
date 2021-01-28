@@ -273,17 +273,17 @@ the upper quartile $c$\\ for continuous variables."
   contCatVarTable=rbind(cumulativeContVarTables,cumulativeCatVarTables)
   
   ######################################################################################
-  ####            Performing statistic tests and producing their tables             ####
+  ####      Performing contvar statistic tests and producing their tables        ####
   ######################################################################################
   
-  TShold.anova<-NULL       # aov.t
-  TShold.kruskal<-NULL     # kruskal.t
-  TShold.ranksum<-NULL     # wilcox.t
-  TShold.ttest<-NULL       # t.test
-  TShold.chisq<-NULL       # chisq.t
-  TShold.fisher<-NULL      # fisher.t
+  TShold.anova   <-NULL     # aov.t
+  TShold.kruskal <-NULL     # kruskal.t
+  TShold.ranksum <-NULL     # wilcox.t
+  TShold.ttest   <-NULL     # t.test
+  TShold.chisq   <-NULL     # chisq.t
+  TShold.fisher  <-NULL     # fisher.t
   
-  TScont<-NULL
+  TScont         <-NULL     # Table to hold all contvar tests
   if(!is.null(contvar)){    
     if(n.splitvarLevels < 3) {
       
