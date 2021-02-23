@@ -41,7 +41,7 @@ myTable1=function(dat,
                   my.loc="./tab1.tex",  # location for tex file e.g. "./name.tex"
                   mysize="scriptsize",
                   showtable=F,          # Whether to show Table on current screen. Only works on Macs
-                  hasExcluded=F,           # If true then there must be a column called "excluded" that indicates which rows to remove with a 1
+                  hasExcluded=F,        # If true then there must be a column called "excluded" that indicates which rows to remove with a 1
                   fisherWorkspace=200000,# The size of the workspace for fisher.t
                   ... ){   
  
@@ -50,8 +50,9 @@ myTable1=function(dat,
   if(is.null(prmsd)){prmsd=c(rep("mean",length(contvar)))}
   if(is.null(contTest)&!is.null(contvar))contTest=rep("aov.t",length(contvar))
   if(is.null(catTest)&!is.null(catvar))catTest=rep("fisher.t",length(catvar))
+  #Todo check for brackets and special characters and escape them
   
-  if (!is.null(hasExcluded)){dat=dat[!(dat$excluded==1),]}
+  if ((hasExcluded)){dat=dat[!(dat$excluded==1),]}
   
   defaultCaption="Summary of patients' variables across "  
   
