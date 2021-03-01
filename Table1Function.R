@@ -349,7 +349,7 @@ the upper quartile $c$\\ for continuous variables."
         df.k=round(kmd[["parameter"]])[[1]]
         
         if(round(kmd[["p.value"]],digits=pdec) < myeps){P=",~P"}else{P=",~P="}
-        k.ts=paste("$\\chi^2_{",df.k,"}=",ts.k,P,p.k,"$",sep="")
+        k.ts=paste("chi^2","=", ts.k, ", df=", df.k, P, p.k, sep="")
         TShold.kruskal=c(TShold.kruskal,k.ts)
       }
     } #End of Kruskal Wallis 
