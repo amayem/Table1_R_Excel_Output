@@ -67,7 +67,7 @@ myTable1=function(dat,
   testsAvailable=data.frame(aov.t="ANOVA test",fisher.t="Fisher exact test",
                     chisq.t="Chi-squared test",t.test="T-test",
                     kruskal.t="Kruskal-Wallis test"
-                    ,wilcox.t="Wilcoxon ranked sum test")
+                    ,wilcox.t="Wilcoxon Rank Sum test")
   
   testsRequestedVector=unique(c(contTest, catTest))
   testsRequestedDataFrame=testsAvailable%>%select(one_of(testsRequestedVector))
@@ -329,7 +329,7 @@ the upper quartile $c$\\ for continuous variables."
           p.w= format.pval(round(wmd[['p.value']],digits=pdec),eps=myeps)  
           # df.w=round(wmd[["parameter"]])[[1]]
           if(round(wmd[["p.value"]],digits=pdec) < myeps){P="~P"}else{P="~P="}
-          w.ts=paste("$W=",ts.w,",",P,p.w,"$",sep="")
+          w.ts=paste("W=",ts.w,", ",P, p.w, sep="")
           TShold.ranksum=c(TShold.ranksum, w.ts)
         }
       } #End of Wilcox.test 
@@ -384,7 +384,7 @@ the upper quartile $c$\\ for continuous variables."
           temp.TSNcont="ANOVA"
         }else if(contTest[ii]=="wilcox.t"){
           tscont=TShold.ranksum[ii]
-          temp.TSNcont="Wilcox"
+          temp.TSNcont="Wilcoxon Rank Sum"
         }else if(contTest[ii]=="kruskal.t"){
           tscont=TShold.kruskal[ii]
           temp.TSNcont="Kruskal-Wallis"
