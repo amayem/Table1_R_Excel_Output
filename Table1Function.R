@@ -50,6 +50,8 @@ myTable1=function(dat,
                   showtable=F,          # Whether to show Table on current screen. Only works on Macs
                   hasExcluded=F,        # If true then there must be a column called "excluded" that indicates which rows to remove with a 1
                   fisherWorkspace=200000,# The size of the workspace for fisher.t
+                  disparateN=T,          # If n in the row is different from the n declared in the splitvar column then include the disparate n in the cell. e
+                                        # eg n=10 in splitvar1 and 15 in splitvar 2 for a total of 25, but there is only data on 20 for contVar1, so we can't see where the data loss is.
                   ... ){   
  
   
@@ -106,13 +108,39 @@ the upper quartile $c$\\ for continuous variables."
   }
   
   ######################################################################################
+  ######                     Pre-processing data                                   #####
+  ######################################################################################
+  
+  #Make all catvars factors
+  for(k in catvar){
+    tmp.lbl=label(dat[[k]]) # Place holder for label
+    dat[[k]]<-factor(dat[[k]]) # Change into a factor. Check how NA's under factors behave
+    label(dat[[k]])<-tmp.lbl # Place label back
+  }
+  if(Trace==T)cat("Categorical Variables changed to factors","\n")
+  
+  #Make splitvar a factor
+  if(is.null(mylevels)){
+    dat[[splitvar]]=factor(dat[[splitvar]]) # changing split var to factors
+  }else{
+    dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)                                                       
+  }
+  if(Trace==T)cat("Splitvar Variables changed to factors","\n")
+  n.splitvarLevels=nlevels(dat[[splitvar]]) #Number of levels in the splitvar
+  n.splitvar = table(dat[[splitvar]])       #Number of observations in each splitvar level
+  n.splitvarCombined = c(n.splitvar, sum(n.splitvar)) #Number of observations in each level and combined
+  
+  ######################################################################################
   ######Calculating summaries (mean and median) stratified on splitvar and Combined#####
   ######################################################################################
   if(Trace==T)cat("Now Calculating summaries","\n")
   
-  #We need to make our own functions that have the decimal places included so that we can pass it to the tapply function coming up
+  index<<-0  #A global variable that we will use this to keep track of which splitvar factor we are in in our custom functions.
+  
+  #We need to make our own functions that will print the summaries in one cell so that we can pass it to the tapply function coming up
   #Function for mean
   myMean=function(x){
+    index <<- index+1; #increment the index with each iteration
     m=round(mean(x,na.rm=T),digits=mydec)
     s=round(sd(x,na.rm=T),digits=mydec)
     n=sum(!is.na(x))
@@ -120,17 +148,33 @@ the upper quartile $c$\\ for continuous variables."
     pm=paste(m," $\\pm$",s,sep="")
     if(bracket==F)rr=pm
     
+    #check if disparateN is true AND the current index is not for the combined column, and the n in the current cell is different from the n for the splitvar level.
+    #There is no need to add the n for the combined because it is included in the column called n
+    if(disparateN && index %% (n.splitvarLevels + 1) && n != n.splitvarCombined[index %% (n.splitvarLevels + 1)])
+    {
+      rr=paste(rr, " n=", n, sep="")
+    }
+    
     return(rr)
   }
   
   #Function for median   
   myMedian=function(x){
+    index <<- index+1;
     m=round(quantile(x,na.rm=T),digits=mydec)
     lq=m[[2]]
     mq=m[[3]]
     uq=m[[4]]
     n=sum(!is.na(x))
     rr=paste(mq," (",lq,"-",uq,")",sep="")
+    
+    #check if disparateN is true AND the current index is not for the combined column, and the n in the current cell is different from the n for the splitvar level.
+    #There is no need to add the n for the combined because it is included in the column called n
+    if(disparateN && index %% (n.splitvarLevels + 1) && n != n.splitvarCombined[index %% (n.splitvarLevels + 1)])
+    {
+      rr=paste(rr, " n=", n, sep="")
+    }
+    
     return(rr)
   }
   
@@ -195,22 +239,6 @@ the upper quartile $c$\\ for continuous variables."
   ####Producing Table for Categorical Variables stratified on split var and Combined####
   ######################################################################################
   
-  #Make all catvars factors
-  for(k in catvar){
-    tmp.lbl=label(dat[[k]]) # Place holder for label
-    dat[[k]]<-factor(dat[[k]]) # Change into a factor. Check how NA's under factors behave
-    label(dat[[k]])<-tmp.lbl # Place label back
-  }
-  if(Trace==T)cat("Categorical Variables changed to factors","\n")
-  
-  #Make splitvar a factor
-  if(is.null(mylevels)){
-    dat[[splitvar]]=factor(dat[[splitvar]]) # changing split var to factors
-  }else{
-    dat[[splitvar]]=factor(dat[[splitvar]],levels=mylevels)                                                       
-  }
-  if(Trace==T)cat("Splitvar Variables changed to factors","\n")
-  n.splitvarLevels=nlevels(dat[[splitvar]]) #Number of levels in the splitvar
   cumulativeCatVarTables=NULL
   
   #Check if any categorical variables are provided
@@ -471,8 +499,8 @@ the upper quartile $c$\\ for continuous variables."
   
   ch=colheads=table(dat[[splitvar]])
   hnam=names(colheads)
-  colheads=c("Variables","N", hnam,"Combined","P value", "Test")
-  extracolheads=c("","",paste("N=",as.vector(ch),sep=""),paste("N=",sum(as.vector(ch)),sep=""))
+  colheads=c("Variables","n", hnam,"Combined","P value", "Test")
+  extracolheads=c("","",paste("n=",as.vector(ch),sep=""),paste("n=",sum(as.vector(ch)),sep=""))
   insert.bottoml="\\scriptsize{   Data is presented as : 
 Mean$\\pm$SD for continuous variables, row percentages (frequency) for categorical variables~~\\indent test Test used: \\textsuperscript{\\normalfont 1} T-test ~~~~~, \\textsuperscript{\\normalfont 2} Pearson chi-square test } "
   
