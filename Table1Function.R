@@ -5,7 +5,14 @@
 
 #This function computes summary of variables as need for Table 1 with test and P 
 #for continuous and categorical values:updated Dec 24, 2016
-#Takes a longer time to work for large data set   
+#Takes a longer time to work for large data set 
+
+#TO DO
+#Make mean default with a warning if none specified
+#Make aov.t default with a warning if none specified
+#Check if all vars given are actually present. Throw error if not.
+#Check why catvar names with "/" are accepted but not contvar
+#Check why var names with "-" are not accepted
 
 myTable1=function(dat,
                   contvar=NULL,          # Continuous Variables 
@@ -123,7 +130,7 @@ the upper quartile $c$\\ for continuous variables."
     mq=m[[3]]
     uq=m[[4]]
     n=sum(!is.na(x))
-    rr=paste("{\\scriptsize",lq,"~}", " {\\bf",mq,"}~"," {\\scriptsize",uq,"}",sep="")
+    rr=paste(mq," (",lq,"-",uq,")",sep="")
     return(rr)
   }
   
@@ -486,6 +493,7 @@ Mean$\\pm$SD for continuous variables, row percentages (frequency) for categoric
   
   xcelldat=apply(myres[["mytab1"]],2,FUN=cleann)
   nn.col=ncol(xcelldat)
+  # browser()
   colnames(xcelldat)[1]<-"Variables"
   
   extraH=t(as.matrix( c(extracolheads,"","") ))
