@@ -72,7 +72,7 @@ myTable1=function(dat,
                     ,wilcox.t="Wilcoxon Rank Sum test")
   
   testsRequestedVector=unique(c(contTest, catTest))
-  testsRequestedDataFrame=testsAvailable%>%select(one_of(testsRequestedVector))
+  testsRequestedDataFrame=testsAvailable%>%dplyr::select(one_of(testsRequestedVector))
   testsRequestedMatrix=as.matrix(testsRequestedDataFrame)
   bottom=NULL
   n.testsRequestedMatrix=ncol(testsRequestedMatrix)
@@ -140,7 +140,7 @@ the upper quartile $c$\\ for continuous variables."
   #We need to make our own functions that will print the summaries in one cell so that we can pass it to the tapply function coming up
   #Function for mean
   myMean=function(x){
-    index <<- index+1; #increment the index with each iteration
+
     m=round(mean(x,na.rm=T),digits=mydec)
     s=round(sd(x,na.rm=T),digits=mydec)
     n=sum(!is.na(x))
@@ -148,19 +148,18 @@ the upper quartile $c$\\ for continuous variables."
     pm=paste(m," $\\pm$",s,sep="")
     if(bracket==F)rr=pm
     
-    #check if disparateN is true AND the current index is not for the combined column, and the n in the current cell is different from the n for the splitvar level.
-    #There is no need to add the n for the combined because it is included in the column called n
-    if(disparateN && index %% (n.splitvarLevels + 1) && n != n.splitvarCombined[index %% (n.splitvarLevels + 1)])
+    #check if disparateN is true and the n in the current cell is different from the n for the splitvar level.
+    if(disparateN && n != n.splitvarCombined[index %% (n.splitvarLevels + 1) + 1])
     {
       rr=paste(rr, " n=", n, sep="")
     }
-    
+    index <<- index+1; #increment the index with each iteration
     return(rr)
   }
   
   #Function for median   
   myMedian=function(x){
-    index <<- index+1;
+    
     m=round(quantile(x,na.rm=T),digits=mydec)
     lq=m[[2]]
     mq=m[[3]]
@@ -168,13 +167,12 @@ the upper quartile $c$\\ for continuous variables."
     n=sum(!is.na(x))
     rr=paste(mq," (",lq,"-",uq,")",sep="")
     
-    #check if disparateN is true AND the current index is not for the combined column, and the n in the current cell is different from the n for the splitvar level.
-    #There is no need to add the n for the combined because it is included in the column called n
-    if(disparateN && index %% (n.splitvarLevels + 1) && n != n.splitvarCombined[index %% (n.splitvarLevels + 1)])
+    #check if disparateN is true and the n in the current cell is different from the n for the splitvar level.
+    if(disparateN && n != n.splitvarCombined[index %% (n.splitvarLevels + 1) + 1])
     {
       rr=paste(rr, " n=", n, sep="")
     }
-    
+    index <<- index+1;
     return(rr)
   }
   
